@@ -29,6 +29,8 @@ canvas#c{position:fixed;inset:0;width:100%;height:100%;display:block}
   background:linear-gradient(90deg,#ffd23f,#ff6fa5,#4cc3ff);-webkit-background-clip:text;background-clip:text;color:transparent;filter:drop-shadow(0 2px 12px rgba(255,170,40,.5))}
 #overlay.final h2 b{display:block;font-size:clamp(54px,19vw,88px);letter-spacing:1px;margin-top:2px}
 #again,#overlay.final #go{background:linear-gradient(90deg,#ff9a3c,#ff6fa5);color:#fff}
+.box{max-height:88vh;overflow-y:auto}
+#overlay:not(.end):not(.final) #op{font-size:17px}
 .box h2{margin:0 0 8px;font-size:clamp(24px,7.5vw,34px);line-height:1.15;color:#ffb86b}
 .box p{margin:0 0 14px;opacity:.92;line-height:1.4}
 .box ul{margin:0 0 14px;padding:0;list-style:none;text-align:left;line-height:1.4;font-size:15px}
@@ -498,9 +500,9 @@ function frame(now){
   }
   draw(now / 1000); requestAnimationFrame(frame);
 }
-$("oh").innerHTML = "Happy Birthday, " + NAME + "! 🎉";
-$("op").innerHTML = "Your birthday cake is ready – but three thirsty cats want their milk first. <b>Play 3 short levels</b> to unlock your cake!";
-$("rules").innerHTML = "<li>👆 <b>Tap a pipe</b> to turn it a quarter.</li><li>🥛 Connect the <b>milk bottle</b> to the <b>cat's bowl</b> – the milk shows how far it gets.</li><li>💡 Stuck? The hint points to a pipe that needs turning.</li><li>🎂 Three cats happy = cake, friends and a surprise!</li>";
+$("oh").textContent = "Hi " + NAME + "! 🎂";
+$("op").textContent = "Your birthday cake is ready – but three thirsty cats want their milk first. Play 3 short levels to unlock your cake!";
+$("rules").innerHTML = "<li>👆 Tap the pipes to connect the milk bottle to the cat's bowl.</li>";
 $("go").textContent = "Let's play!";
 const hashN = parseInt(location.hash.slice(1), 10);
 bake(); newGame(); level = hashN >= 1 && hashN <= LEVELS.length ? hashN - 1 : 0; loadLevel(level); phase = "intro"; $("overlay").className = "";
