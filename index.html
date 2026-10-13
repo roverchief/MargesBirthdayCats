@@ -3,7 +3,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
 <meta name="theme-color" content="#2b2140">
-<title>Milk Pipes</title>
+<title>Marge's Birthday Cats</title>
 <style>
 html,body{margin:0;height:100%;background:#2b2140;overflow:hidden;touch-action:none;
   -webkit-user-select:none;user-select:none;-webkit-tap-highlight-color:transparent;
@@ -258,11 +258,14 @@ function flow(G){
 const st = makeStage($("c")), ctx = st.ctx, fx = confettiSys();
 let level = 0, G = null, wetSet = new Set(), phase = "intro", winT = 0, doneShown = false, taps = 0, hintCell = -1, bowl = 0, bannerT = 0, mazeIdx = 0;
 const geom = () => { const cs = G.R >= 5 ? 60 : G.C <= 4 ? 70 : 62, w = G.C * cs; return {cs, gx: (WW - w) / 2, gy: 150 + (320 - G.R * cs) / 2}; };
-const heroId = () => HEROES[level % HEROES.length], capital = s => s[0].toUpperCase() + s.slice(1);
+let order = HEROES.slice(), seed0 = 1;
+function newGame(){ order = HEROES.slice().sort(() => Math.random() - .5); }
+const heroId = () => order[level % order.length], capital = s => s[0].toUpperCase() + s.slice(1);
 const lastLevel = () => level === LEVELS.length - 1;
 
-function loadLevel(i){
-  level = i; mazeIdx = i; G = makeLevel(LEVELS[i], i + 3); phase = "play"; winT = 0; doneShown = false; taps = 0; hintCell = -1; bowl = 0; bannerT = 0; wetSet = flow(G).wet;
+function loadLevel(i, keep){
+  if (!keep) seed0 = 1 + ((Math.random() * 1e6) | 0);   // new random piping every time; Reset keeps the same puzzle
+  level = i; mazeIdx = i; G = makeLevel(LEVELS[i], seed0); phase = "play"; winT = 0; doneShown = false; taps = 0; hintCell = -1; bowl = 0; bannerT = 0; wetSet = flow(G).wet;
   raining = false; stopSong(); $("overlay").className = "hide";
 }
 function hint(){
@@ -286,7 +289,7 @@ const cv = $("c");
 cv.addEventListener("pointerdown", e => {
   if (phase !== "play") return;
   const p = st.pt(e);
-  if (p.y < 44){ if (p.x > 286){ loadLevel(level); beep(300, .08); } else if (p.x > 214) hint(); return; }
+  if (p.y < 44){ if (p.x > 286){ loadLevel(level, true); beep(300, .08); } else if (p.x > 214) hint(); return; }
   const g = geom(), ix = Math.floor((p.x - g.gx) / g.cs), iy = Math.floor((p.y - g.gy) / g.cs);
   if (ix < 0 || iy < 0 || ix >= G.C || iy >= G.R) return;
   const t = G.tiles[iy * G.C + ix]; if (!t.base) return;
@@ -482,7 +485,7 @@ function playSong(){
 $("song").onclick = playSong;
 $("go").onclick = () => {
   beep(660, .08); raining = false; stopSong(); $("song").style.display = "none"; $("lyric").style.display = "none";
-  if (phase === "intro") loadLevel(level); else loadLevel(lastLevel() ? 0 : level + 1);
+  if (phase === "intro") loadLevel(level); else if (lastLevel()){ newGame(); loadLevel(0); } else loadLevel(level + 1);
 };
 let last = performance.now();
 function frame(now){
@@ -495,11 +498,12 @@ function frame(now){
   }
   draw(now / 1000); requestAnimationFrame(frame);
 }
-$("oh").textContent = "Milk Pipes";
-$("op").textContent = "A thirsty cat is waiting for its milk.";
-$("rules").innerHTML = "<li>👆 <b>Tap a pipe</b> to turn it a quarter.</li><li>🥛 Connect the <b>milk bottle</b> to the <b>cat's bowl</b>. The milk shows how far it gets.</li><li>💡 Stuck? The hint points to a pipe that needs turning.</li>";
+$("oh").innerHTML = "Happy Birthday, " + NAME + "! 🎉";
+$("op").innerHTML = "Your birthday cake is ready – but three thirsty cats want their milk first. <b>Play 3 short levels</b> to unlock your cake!";
+$("rules").innerHTML = "<li>👆 <b>Tap a pipe</b> to turn it a quarter.</li><li>🥛 Connect the <b>milk bottle</b> to the <b>cat's bowl</b> – the milk shows how far it gets.</li><li>💡 Stuck? The hint points to a pipe that needs turning.</li><li>🎂 Three cats happy = cake, friends and a surprise!</li>";
+$("go").textContent = "Let's play!";
 const hashN = parseInt(location.hash.slice(1), 10);
-bake(); level = hashN >= 1 && hashN <= LEVELS.length ? hashN - 1 : 0; G = makeLevel(LEVELS[level], level + 3); wetSet = flow(G).wet;
+bake(); newGame(); level = hashN >= 1 && hashN <= LEVELS.length ? hashN - 1 : 0; loadLevel(level); phase = "intro"; $("overlay").className = "";
 window.__g = {get G(){ return G; }, get phase(){ return phase; }, geom, get level(){ return level; }, flow, mask};
 requestAnimationFrame(frame);
 </script>
