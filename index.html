@@ -89,19 +89,12 @@ const CAKE_SVG = '<svg viewBox="0 0 120 100"><g><ellipse cx="22" cy="14" rx="3" 
  + '<rect x="8" y="42" width="104" height="44" rx="6" fill="#f4a6c8"/><rect x="8" y="42" width="104" height="10" fill="#fff"/><rect x="18" y="62" width="84" height="8" fill="#ffd23f"/><rect x="2" y="86" width="116" height="8" rx="3" fill="#b86a8f"/></svg>';
 
 
-// ---------- the cats ----------
-// kind = personality. collar = colour of the cat's basket.
+// The three cats
 const CATS = {
-  mochi: {name: "Mochi", kind: "follow",  fur: "#f2a04a", mark: "#c9722a", belly: "#ffe3bd", collar: "#ff5a5f", eye: "#6fd16f", bio: "folgt dem Punkt direkt – am liebsten sofort."},
-  zippy: {name: "Zippy", kind: "distract",fur: "#f6f1e8", mark: "#e08a3c", belly: "#ffffff", collar: "#d9f24a", eye: "#4cc3ff", bio: "folgt dir – bis ein Schmetterling vorbeifliegt. Sofort abgelenkt!"},
-  boo:   {name: "Boo",   kind: "shy",     fur: "#3b3547", mark: "#26212f", belly: "#51495f", collar: "#ff6fa5", eye: "#ffd23f", bio: "ist schüchtern und rennt vor dem Punkt davon. Scheuche sie hin!"},
-  ninja: {name: "Ninja", kind: "pounce",  fur: "#d8d2c4", mark: "#8c7b62", belly: "#f4efe4", collar: "#b388ff", eye: "#ff9f43", bio: "schleicht an und springt auf den Punkt – mit viel Schwung."},
-  chonk: {name: "Chonk", kind: "lazy",    fur: "#f1d9b5", mark: "#e0a458", belly: "#fffaf0", collar: "#ffd23f", eye: "#6fd16f", bio: "ist faul und bewegt sich nur, wenn der Punkt ganz nah ist."},
-  dash:  {name: "Dash",  kind: "slide",   fur: "#8b5e3c", mark: "#5a3a22", belly: "#d2b48c", collar: "#ff9f1c", eye: "#ffd23f", bio: "rutscht und flitzt über jedes Ziel hinaus. Bremsen? Nie gehört."},
-  echo:  {name: "Echo",  kind: "echo",    fur: "#efe2cf", mark: "#5b4636", belly: "#fff5e6", collar: "#06d6a0", eye: "#4cc3ff", bio: "läuft dorthin, wo der Punkt vor einer Sekunde war."},
-  nap:   {name: "Nap",   kind: "nap",     fur: "#c7b5e8", mark: "#9a85c4", belly: "#f3ecff", collar: "#7f5539", eye: "#ffd23f", bio: "jagt kurz und schläft dann mitten im Lauf ein."}
+  duchess: {name: "Duchess", fur: "#fbf8f2", mark: "#e6dfd3", belly: "#ffffff", collar: "#ff6fa5", eye: "#4cc3ff"},   // white
+  natasha: {name: "Natasha", fur: "#5d616d", mark: "#41444f", belly: "#8c909d", collar: "#b388ff", eye: "#8fd16f"},   // dark grey
+  ninja:   {name: "Ninja",   fur: "#27242f", mark: "#17151d", belly: "#3d3947", collar: "#ffd23f", eye: "#ffc93c"}    // black
 };
-
 
 function rr(ctx, x, y, w, h, r){ ctx.beginPath(); ctx.moveTo(x + r, y); ctx.arcTo(x + w, y, x + w, y + h, r); ctx.arcTo(x + w, y + h, x, y + h, r); ctx.arcTo(x, y + h, x, y, r); ctx.arcTo(x, y, x + w, y, r); ctx.closePath(); }
 function ell(ctx, x, y, rx, ry, col){ ctx.fillStyle = col; ctx.beginPath(); ctx.ellipse(x, y, rx, ry, 0, 0, 7); ctx.fill(); }
@@ -142,7 +135,7 @@ function drawBigCake(ctx, x, y, s, t){
 // mood: "wait" | "drink" | "happy". amt = 0..1 head bow while drinking.
 function drawCatSide(ctx, o){
   const d = CATS[o.id], t = o.t || 0, mood = o.mood || "wait", s = o.s || 1, flip = o.flip ? -1 : 1, ph = o.ph || 0;
-  const fat = o.id === "chonk" ? 1.22 : 1, bow = mood === "drink" ? o.bow : 0;
+  const fat = 1, bow = mood === "drink" ? o.bow : 0;
   const hop = mood === "happy" ? -Math.abs(Math.sin(t * 6 + ph)) * 6 : 0;
   ctx.save(); ctx.translate(o.x, o.y); ctx.scale(s * flip, s);
   ell(ctx, 0, 1, 34 * fat, 6, "rgba(20,8,30,.3)");
@@ -162,24 +155,20 @@ function drawCatSide(ctx, o){
   ctx.beginPath(); ctx.ellipse(13, -28, 9, 20, .05, 0, 7); fill(d.belly, false);    // chest
   // markings
   ctx.fillStyle = d.mark; ctx.strokeStyle = d.mark; ctx.lineWidth = 3; ctx.lineCap = "round";
-  if (o.id === "mochi" || o.id === "dash" || o.id === "nap"){ for (const [x1, y1] of [[-16, -42], [-10, -32], [-18, -26]]){ ctx.beginPath(); ctx.moveTo(x1 * fat, y1); ctx.lineTo(x1 * fat + 12, y1 + 2); ctx.stroke(); } }
-  if (o.id === "zippy"){ ctx.beginPath(); ctx.ellipse(-8 * fat, -44, 11, 9, .4, 0, 7); ctx.fill(); ctx.beginPath(); ctx.ellipse(-14 * fat, -18, 8, 6, 0, 0, 7); ctx.fillStyle = "#444"; ctx.fill(); }
   // front leg
   ctx.beginPath(); rr(ctx, 8, -30, 11, 29, 5); fill(d.fur);
   ctx.beginPath(); ctx.ellipse(15, -2, 9, 4.5, 0, 0, 7); fill(d.belly);
-  if (o.id === "ninja" || o.id === "echo"){ ctx.beginPath(); ctx.ellipse(15, -2, 9, 4.5, 0, 0, 7); fill(d.mark); }
+  if (false){ ctx.beginPath(); ctx.ellipse(15, -2, 9, 4.5, 0, 0, 7); fill(d.mark); }
   // head (pivots at the neck)
   ctx.save(); ctx.translate(12, -54 + bow * 6); ctx.rotate(bow * .55);
   const hx = 3, hy = -14;
   // ears
   for (const [ax, ay, bx, by, cx, cy] of [[-9, -18, -6, -38, 6, -22], [5, -22, 18, -38, 20, -16]]){
     ctx.beginPath(); ctx.moveTo(ax + hx, ay + hy + 12); ctx.lineTo(bx + hx, by + hy + 12); ctx.lineTo(cx + hx, cy + hy + 12); ctx.closePath(); fill(d.fur);
-    ctx.beginPath(); ctx.moveTo(ax + hx + 3, ay + hy + 10); ctx.lineTo(bx + hx + 1.5, by + hy + 16); ctx.lineTo(cx + hx - 3, cy + hy + 10); ctx.closePath(); ctx.fillStyle = (o.id === "ninja" || o.id === "echo") ? d.mark : "#ffadc7"; ctx.fill();
+    ctx.beginPath(); ctx.moveTo(ax + hx + 3, ay + hy + 10); ctx.lineTo(bx + hx + 1.5, by + hy + 16); ctx.lineTo(cx + hx - 3, cy + hy + 10); ctx.closePath(); ctx.fillStyle = (false) ? d.mark : "#ffadc7"; ctx.fill();
   }
   ctx.beginPath(); ctx.ellipse(hx, hy, 19 * (fat > 1 ? 1.1 : 1), 16, 0, 0, 7); fill(d.fur);
-  if (o.id === "ninja" || o.id === "echo"){ ctx.beginPath(); ctx.ellipse(hx + 9, hy + 5, 11, 9, 0, 0, 7); ctx.fillStyle = d.mark; ctx.globalAlpha = .75; ctx.fill(); ctx.globalAlpha = 1; }
-  if (o.id === "mochi"){ ctx.strokeStyle = d.mark; ctx.lineWidth = 2.5; for (const dx of [-4, 3, 10]){ ctx.beginPath(); ctx.moveTo(hx + dx, hy - 15); ctx.lineTo(hx + dx, hy - 8); ctx.stroke(); } }
-  if (o.id === "zippy"){ ctx.beginPath(); ctx.ellipse(hx - 6, hy - 7, 8, 7, .3, 0, 7); ctx.fillStyle = d.mark; ctx.fill(); }
+  if (false){ ctx.beginPath(); ctx.ellipse(hx + 9, hy + 5, 11, 9, 0, 0, 7); ctx.fillStyle = d.mark; ctx.globalAlpha = .75; ctx.fill(); ctx.globalAlpha = 1; }
   ctx.beginPath(); ctx.ellipse(hx + 11, hy + 5, 8, 6, 0, 0, 7); ctx.fillStyle = d.belly; ctx.fill();   // muzzle
   // eye
   const blink = (Math.sin(t * .9 + ph * 3) > .985) || mood === "happy";
@@ -206,7 +195,7 @@ const rot = m => ((m << 1) | (m >> 3)) & 15;
 const rotN = (m, k) => { for (let i = 0; i < k; i++) m = rot(m); return m; };
 const BASES = {straight: N_ | S_, corner: N_ | E_, tee: N_ | E_ | W_};
 const LEVELS = [{R: 3, C: 3}, {R: 4, C: 3}, {R: 4, C: 4}];
-const HEROES = ["mochi", "zippy", "ninja", "chonk", "boo"];
+const HEROES = ["duchess", "natasha", "ninja"];
 const HATS = ["#ff6fa5", "#4cc3ff", "#ffd23f", "#d9f24a", "#b388ff", "#ff9f43", "#06d6a0", "#ff5a5f"];
 
 function makeLevel(L, seed){
@@ -262,7 +251,7 @@ let level = 0, G = null, wetSet = new Set(), phase = "intro", winT = 0, doneShow
 const geom = () => { const cs = G.R >= 5 ? 60 : G.C <= 4 ? 70 : 62, w = G.C * cs; return {cs, gx: (WW - w) / 2, gy: 150 + (320 - G.R * cs) / 2}; };
 let order = HEROES.slice(), seed0 = 1;
 function newGame(){ order = HEROES.slice().sort(() => Math.random() - .5); }
-const heroId = () => order[level % order.length], capital = s => s[0].toUpperCase() + s.slice(1);
+const heroId = () => order[level % order.length], capital = s => CATS[s].name;
 const lastLevel = () => level === LEVELS.length - 1;
 
 function loadLevel(i, keep){
